@@ -1,0 +1,13 @@
+{
+  "name": "inventario-colecciones",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build:css": "tailwindcss -i ./public/css/src/input.css -o ./public/css/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./public/css/src/input.css -o ./public/css/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4",
+    "@tailwindcss/cli": "^4"
+  }
+}

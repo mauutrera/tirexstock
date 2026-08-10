@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Paleta — Modo Claro (3.2 de Especificaciones_Tecnicas_Diseno.md) */
+@theme {
+    --color-fondo: #ffffff;
+    --color-superficie: #f3f4f6;
+    --color-texto: #1f2937;
+    --color-acento: #4f46e5;
+    --color-texto-secundario: #9ca3af;
+    --color-borde: #e5e7eb;
+
+    /* Variante de acento para TEXTO (enlaces, ítems activos, botones de solo texto).
+       --color-acento es la de fondo de botón (3.2); en modo oscuro es intencionalmente
+       oscura (#312E81) para combinar con texto blanco encima, por lo que no sirve como
+       color de texto sobre la superficie oscura — se aclara aquí para mantener contraste. */
+    --color-acento-texto: #4f46e5;
+
+    --font-sans: system-ui, -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Paleta — Modo Oscuro: mismas variables, mismo nombre de utilidades, sin mezclar modos */
+:root.dark {
+    --color-fondo: #111827;
+    --color-superficie: #1f2937;
+    --color-texto: #ffffff;
+    --color-acento: #312e81;
+    --color-texto-secundario: #9ca3af;
+    --color-borde: #374151;
+    --color-acento-texto: #818cf8;
+}
+
+body {
+    font-family: var(--font-sans);
+}
