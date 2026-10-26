@@ -14,6 +14,7 @@ import ColeccionesAdminView from '../views/ColeccionesAdminView.js';
 import AlmacenesAdminView from '../views/AlmacenesAdminView.js';
 import UsuariosAdminView from '../views/UsuariosAdminView.js';
 import PerfilView from '../views/PerfilView.js';
+import NotificacionesView from '../views/NotificacionesView.js';
 import { esAdmin } from './PermisosCliente.js';
 
 /** Clase principal: inicializa la SPA (sesión, tema, router). */
@@ -34,20 +35,23 @@ class App {
         this._registrarEventosGlobales();
         this._iniciarRouter();
         this._registrarServiceWorker();
-        this._notificarAlertasStockBajo();
     }
 
-    /** Notificaciones de alertas de stock bajo, cargadas al abrir la app (5.1). */
-    async _notificarAlertasStockBajo() {
+    /**
+     * Contador de notificaciones (alertas de stock bajo) en la campana y el menú lateral.
+     * Se refresca en cada navegación, ya que entradas/salidas cambian el stock.
+     */
+    async _actualizarContadorNotificaciones() {
         if (!esAdmin(this.usuario)) return;
         try {
-            const datos = await this.api.get('/api/dashboard');
+            const datos = await this.api.get('/api/notificaciones');
             const total = datos.alertas_stock_bajo?.length || 0;
-            if (total > 0) {
-                this.toast.info(`Hay ${total} colección(es) con stock bajo el umbral configurado.`);
-            }
+            document.querySelectorAll('[data-contador-notificaciones]').forEach((contador) => {
+                contador.textContent = total > 99 ? '99+' : String(total);
+                contador.classList.toggle('hidden', total === 0);
+            });
         } catch {
-            // Silencioso: no bloquear el arranque de la app por esto.
+            // Silencioso: no bloquear la navegación por esto.
         }
     }
 
@@ -101,6 +105,7 @@ class App {
         const contexto = { api: this.api, usuario: this.usuario, toast: this.toast };
         const rutas = [
             { patron: '/dashboard', vista: DashboardView },
+            { patron: '/notificaciones', vista: NotificacionesView },
             { patron: '/entradas', vista: EntradasView },
             { patron: '/salidas', vista: SalidasView },
             { patron: '/inventario', vista: InventarioView },
@@ -113,7 +118,12 @@ class App {
             { patron: '/perfil', vista: PerfilView },
         ];
 
-        new RouterCliente({ rutas, contexto, contenedor: this.contenedor }).iniciar();
+        new RouterCliente({
+            rutas,
+            contexto,
+            contenedor: this.contenedor,
+            alNavegar: () => this._actualizarContadorNotificaciones(),
+        }).iniciar();
     }
 
     _registrarServiceWorker() {

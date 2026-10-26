@@ -25,7 +25,6 @@ export default class ColeccionesAdminView {
         this.tabla = new DataTable({
             contenedor: this.contenedor.querySelector('[data-tabla]'),
             columnas: [
-                { clave: 'id_coleccion', etiqueta: 'ID Colección' },
                 { clave: 'descripcion', etiqueta: 'Descripción', filtro: { tipo: 'texto' } },
                 { clave: 'item', etiqueta: 'Ítem', filtro: { tipo: 'texto' } },
                 { clave: 'tipo', etiqueta: 'Tipo', filtro: { tipo: 'texto' } },
@@ -37,7 +36,12 @@ export default class ColeccionesAdminView {
             ],
             acciones: [
                 { etiqueta: 'Editar', onClick: (fila) => this._abrirFormulario(fila) },
-                { etiqueta: 'Eliminar', claseCss: 'text-red-600 hover:bg-red-50', onClick: (fila) => this._eliminar(fila) },
+                {
+                    etiqueta: 'Eliminar',
+                    claseCss: 'text-red-600 hover:bg-red-50',
+                    visible: (fila) => Number(fila.total_items) === 0,
+                    onClick: (fila) => this._eliminar(fila),
+                },
             ],
             cargarPagina: (pagina, filtros) => this.api.get(this._url(pagina, filtros)),
             exportar: (filtros) => this.api.descargar(this._url(1, filtros, true), 'colecciones.csv'),

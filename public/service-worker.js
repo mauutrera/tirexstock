@@ -1,20 +1,21 @@
-const CACHE_ESTATICA = 'inventariocol-estatica-v3';
+const CACHE_ESTATICA = 'inventariocol-estatica-v12';
 const CACHE_API = 'inventariocol-api-v1';
 
 const ASSETS_PRECARGA = [
     '/manifest.json',
-    '/public/css/tailwind.css',
-    '/public/icons/icon.svg',
-    '/public/js/core/App.js',
-    '/public/js/core/ApiClient.js',
-    '/public/js/core/Router.js',
-    '/public/js/core/ThemeManager.js',
-    '/public/js/core/Utilidades.js',
-    '/public/js/core/PermisosCliente.js',
-    '/public/js/components/DataTable.js',
-    '/public/js/components/FilterBar.js',
-    '/public/js/components/Modal.js',
-    '/public/js/components/Toast.js',
+    '/favicon.ico',
+    '/css/tailwind.css',
+    '/img/icon.svg',
+    '/js/core/App.js',
+    '/js/core/ApiClient.js',
+    '/js/core/Router.js',
+    '/js/core/ThemeManager.js',
+    '/js/core/Utilidades.js',
+    '/js/core/PermisosCliente.js',
+    '/js/components/DataTable.js',
+    '/js/components/FilterBar.js',
+    '/js/components/Modal.js',
+    '/js/components/Toast.js',
 ];
 
 self.addEventListener('install', (evento) => {
@@ -71,8 +72,11 @@ self.addEventListener('fetch', (evento) => {
     // ruta nueva agregada a App.js) sigue sirviéndose obsoleto indefinidamente
     // hasta que algo más invalide la caché — network-first evita esa clase
     // de bug y solo cae a caché cuando de verdad no hay red (offline).
+    // `no-cache` obliga a revalidar con el servidor (ETag): sin esto, la caché
+    // HTTP heurística del navegador puede devolver un módulo JS viejo mezclado
+    // con módulos nuevos, aunque la petición pase por la red.
     evento.respondWith(
-        fetch(request)
+        fetch(request, { cache: 'no-cache' })
             .then((respuesta) => {
                 if (respuesta.ok) {
                     const copia = respuesta.clone();

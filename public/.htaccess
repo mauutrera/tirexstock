@@ -1,0 +1,17 @@
+RewriteEngine On
+
+# Sirve archivos y carpetas reales (assets estáticos) directamente.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Todo lo demás pasa por el único punto de entrada.
+RewriteRule ^ index.php [L]
+
+# JS/CSS sin caché heurística: el navegador revalida siempre (ETag → 304 si no
+# cambió), para no mezclar módulos ES viejos y nuevos tras un despliegue.
+<IfModule mod_headers.c>
+    <FilesMatch "\.(js|mjs|css|json)$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+</IfModule>

@@ -15,18 +15,20 @@ if (PHP_SAPI === 'cli-server') {
     }
 }
 
-spl_autoload_register(function (string $clase): void {
+$raizProyecto = dirname(__DIR__);
+
+spl_autoload_register(function (string $clase) use ($raizProyecto): void {
     $prefijo = 'App\\';
     if (!str_starts_with($clase, $prefijo)) {
         return;
     }
     $rutaRelativa = str_replace('\\', '/', substr($clase, strlen($prefijo)));
-    $archivo = __DIR__ . '/app/' . $rutaRelativa . '.php';
+    $archivo = $raizProyecto . '/app/' . $rutaRelativa . '.php';
     if (file_exists($archivo)) {
         require $archivo;
     }
 });
 
-require __DIR__ . '/config/config.php';
+require $raizProyecto . '/config/config.php';
 
 App\Core\Router::despachar();

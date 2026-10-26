@@ -7,13 +7,14 @@ import { escaparHtml } from '../core/Utilidades.js';
  * no duplicar la lógica de paginación/filtros en cada una.
  */
 export default class DataTable {
-    constructor({ contenedor, columnas, cargarPagina, acciones = [], exportar = null, filaVacia = 'Sin registros.' }) {
+    constructor({ contenedor, columnas, cargarPagina, acciones = [], exportar = null, filaVacia = 'Sin registros.', titulo = null }) {
         this.contenedor = contenedor;
         this.columnas = columnas;
         this.cargarPagina = cargarPagina;
         this.acciones = acciones;
         this.exportar = exportar;
         this.filaVacia = filaVacia;
+        this.titulo = titulo;
         this.paginaActual = 1;
         this.filtros = {};
         this.datosActuales = [];
@@ -23,7 +24,8 @@ export default class DataTable {
     _render() {
         this.contenedor.innerHTML = `
             <div data-filtros></div>
-            <div class="rounded-xl border border-borde bg-superficie overflow-hidden">
+            ${this.titulo ? `<h2 class="text-sm font-semibold mb-2">${escaparHtml(this.titulo)}</h2>` : ''}
+            <div class="tarjeta overflow-hidden">
                 <div class="flex items-center justify-between px-4 py-3 border-b border-borde">
                     <span data-resumen class="text-xs text-texto-secundario"></span>
                     ${this.exportar ? '<button type="button" data-exportar class="rounded-lg border border-borde px-3 py-1.5 text-xs font-medium hover:bg-fondo">Exportar a Excel</button>' : ''}
@@ -90,7 +92,7 @@ export default class DataTable {
             cuerpo.innerHTML = datos
                 .map((fila, indiceFila) => {
                     const celdas = this.columnas
-                        .map((columna) => `<td class="px-4 py-2.5 align-top">${this._valorCelda(columna, fila)}</td>`)
+                        .map((columna) => `<td class="px-4 py-3 align-top ${columna.clave.startsWith('fecha') ? 'whitespace-nowrap' : ''}">${this._valorCelda(columna, fila)}</td>`)
                         .join('');
                     const accionesHtml = this.acciones.length
                         ? `<td class="px-4 py-2.5 text-right whitespace-nowrap space-x-1">${this.acciones

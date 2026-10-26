@@ -2,35 +2,129 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Paleta — Modo Claro (3.2 de Especificaciones_Tecnicas_Diseno.md) */
-@theme {
-    --color-fondo: #ffffff;
-    --color-superficie: #f3f4f6;
-    --color-texto: #1f2937;
+/* Paleta — Modo Claro. El plano de página (fondo) es gris muy claro y las
+   tarjetas (superficie) blancas, para separar contenido sin bordes pesados. */
+@theme static {
+    --color-fondo: #f5f7fa;
+    --color-superficie: #ffffff;
+    --color-texto: #0f172a;
     --color-acento: #4f46e5;
-    --color-texto-secundario: #9ca3af;
-    --color-borde: #e5e7eb;
+    --color-texto-secundario: #64748b;
+    --color-borde: #e5e8ee;
 
-    /* Variante de acento para TEXTO (enlaces, ítems activos, botones de solo texto).
-       --color-acento es la de fondo de botón (3.2); en modo oscuro es intencionalmente
-       oscura (#312E81) para combinar con texto blanco encima, por lo que no sirve como
-       color de texto sobre la superficie oscura — se aclara aquí para mantener contraste. */
+    /* Variante de acento para TEXTO (enlaces, ítems activos, botones de solo texto),
+       separada de --color-acento (fondo de botón) para mantener contraste en oscuro. */
     --color-acento-texto: #4f46e5;
+    /* Lavado del acento: ítem activo del menú, chips y fondos de íconos. */
+    --color-acento-suave: #eef0fe;
 
-    --font-sans: system-ui, -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    /* Tokens de gráficas (validados con el validador de paleta, ver DashboardView.js).
+       Serie 1 = entradas, serie 2 = salidas, serie 3 = ajustes; nunca se reasignan. */
+    --color-serie-1: #2a78d6;
+    --color-serie-2: #eb6834;
+    --color-serie-3: #1baf7a;
+    --color-grafico-rejilla: #eef0f4;
+    --color-grafico-eje: #cbd2dc;
+
+    /* Estados reservados (siempre acompañados de ícono + texto). */
+    --color-estado-ok: #0ca30c;
+    --color-estado-alerta: #fab219;
+    --color-estado-critico: #d03b3b;
+
+    --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    --shadow-tarjeta: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.06);
+    --shadow-flotante: 0 10px 30px -10px rgb(15 23 42 / 0.25);
 }
 
 /* Paleta — Modo Oscuro: mismas variables, mismo nombre de utilidades, sin mezclar modos */
 :root.dark {
-    --color-fondo: #111827;
-    --color-superficie: #1f2937;
-    --color-texto: #ffffff;
-    --color-acento: #312e81;
-    --color-texto-secundario: #9ca3af;
-    --color-borde: #374151;
-    --color-acento-texto: #818cf8;
+    --color-fondo: #0b1120;
+    --color-superficie: #151b27;
+    --color-texto: #e8ecf3;
+    --color-acento: #5b5bf0;
+    --color-texto-secundario: #94a3b8;
+    --color-borde: #253045;
+    --color-acento-texto: #a5b4fc;
+    --color-acento-suave: rgb(99 102 241 / 0.16);
+
+    --color-serie-1: #3987e5;
+    --color-serie-2: #d95926;
+    --color-serie-3: #199e70;
+    --color-grafico-rejilla: #1f2838;
+    --color-grafico-eje: #334056;
+
+    --shadow-tarjeta: 0 1px 2px rgb(0 0 0 / 0.3);
+    --shadow-flotante: 0 10px 30px -10px rgb(0 0 0 / 0.6);
 }
 
-body {
-    font-family: var(--font-sans);
+/* Contenedor estándar de contenido (tablas, gráficas, formularios, tarjetas). */
+@utility tarjeta {
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--color-borde);
+    background-color: var(--color-superficie);
+    box-shadow: var(--shadow-tarjeta);
+}
+
+@layer base {
+    html {
+        -webkit-font-smoothing: antialiased;
+        color-scheme: light;
+    }
+    html.dark {
+        color-scheme: dark;
+    }
+
+    body {
+        font-family: var(--font-sans);
+        font-feature-settings: "cv11", "ss01";
+    }
+
+    h1 {
+        letter-spacing: -0.02em;
+    }
+
+    /* Controles de formulario: misma altura visual, transición suave y anillo
+       de foco del acento (accesible con teclado) en toda la app. */
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+    input:not([type="checkbox"]):not([type="radio"]):focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: var(--color-acento-texto);
+        box-shadow: 0 0 0 3px var(--color-acento-suave);
+        background-color: var(--color-superficie);
+    }
+    input[type="checkbox"],
+    input[type="radio"] {
+        accent-color: var(--color-acento);
+    }
+
+    button,
+    a {
+        transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+    }
+    button:focus-visible,
+    a:focus-visible {
+        outline: 2px solid var(--color-acento-texto);
+        outline-offset: 2px;
+    }
+    button:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    /* Encabezados de tabla discretos y filas con números alineados. */
+    table {
+        font-variant-numeric: tabular-nums;
+    }
+
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-borde) transparent;
+    }
 }

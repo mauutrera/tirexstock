@@ -34,7 +34,7 @@ class Item
         $filtros['__solo_con_salida'] = true;
 
         return self::listar($filtros, $pagina, $porPagina, $almacenesPermitidos, [
-            'fecha_salida', 'usuario_retira', 'id_coleccion', 'id_almacen', 'numero_serie', 'notas_salida',
+            'fecha_salida', 'usuario_retira', 'id_coleccion', 'id_almacen', 'numero_serie', 'notas_salida', 'unidad_percibida',
         ]);
     }
 
@@ -106,7 +106,7 @@ class Item
             }
         }
 
-        foreach (['numero_serie', 'notas_entrada', 'notas_salida'] as $campo) {
+        foreach (['numero_serie', 'notas_entrada', 'notas_salida', 'unidad_percibida'] as $campo) {
             if (in_array($campo, $camposTexto, true) && !empty($filtros[$campo])) {
                 $condiciones[] = "i.$campo LIKE :$campo";
                 $parametros[":$campo"] = '%' . $filtros[$campo] . '%';
@@ -280,61 +280,14 @@ class Item
         }
     }
 
-    public static function movimientosRecientes(int $limite, ?array $almacenesPermitidos): array
-    {
-        [$where, $parametros] = self::construirWhere([], $almacenesPermitidos, []);
-        $sql = self::SELECT_BASE . " $where ORDER BY i.fecha_ingreso DESC LIMIT :limite";
-
-        $pdo = Database::conexion();
-        $stmt = $pdo->prepare($sql);
-        foreach ($parametros as $clave => $valor) {
-            $stmt->bindValue($clave, $valor);
-        }
-        $stmt->bindValue(':limite', $limite, PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetchAll();
-    }
-
-    /**
-     * @param array{item: string, tipo: string, medidas: string}|null $conjunto Filtra por el
-     *   conjunto artículo/tipo/medida (independiente del almacén), para poder comparar entre
-     *   almacenes las salidas de un mismo tipo de artículo.
-     */
-    public static function salidasPorAlmacen(?array $almacenesPermitidos, string $desde, ?array $conjunto = null): array
-    {
-        $filtros = array_filter([
-            'fecha_salida_desde' => $desde,
-            '__solo_con_salida' => true,
-        ], static fn ($v) => $v !== null);
-
-        [$where, $parametros] = self::construirWhere($filtros, $almacenesPermitidos, ['fecha_salida']);
-
-        if ($conjunto !== null) {
-            $where .= ($where ? ' AND ' : ' WHERE ') . 'c.item = :conj_item AND c.tipo = :conj_tipo AND c.medidas = :conj_medidas';
-            $parametros[':conj_item'] = $conjunto['item'];
-            $parametros[':conj_tipo'] = $conjunto['tipo'];
-            $parametros[':conj_medidas'] = $conjunto['medidas'];
-        }
-
-        $sql = "SELECT a.nombre AS nombre_almacen, COUNT(*) AS total_salidas
-                FROM items i
-                INNER JOIN colecciones c ON c.id_coleccion = i.id_coleccion
-                INNER JOIN almacenes a ON a.id_almacen = i.id_almacen
-                $where
-                GROUP BY a.nombre
-                ORDER BY total_salidas DESC";
-
-        $stmt = Database::conexion()->prepare($sql);
-        $stmt->execute($parametros);
-
-        return $stmt->fetchAll();
-    }
-
-    public static function topItemsPorSalidas(?array $almacenesPermitidos, string $desde, int $limite = 10): array
+    public static function topItemsPorSalidas(?array $almacenesPermitidos, string $desde, int $limite = 10, ?int $idAlmacen = null): array
     {
         [$where, $parametros] = self::construirWhere(
-            ['fecha_salida_desde' => $desde, '__solo_con_salida' => true],
+            array_filter([
+                'fecha_salida_desde' => $desde,
+                '__solo_con_salida' => true,
+                'id_almacen' => $idAlmacen,
+            ], static fn ($v) => $v !== null),
             $almacenesPermitidos,
             ['fecha_salida']
         );

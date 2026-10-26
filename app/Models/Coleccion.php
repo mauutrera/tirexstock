@@ -21,7 +21,10 @@ class Coleccion
 
         $offset = max(0, ($pagina - 1) * $porPagina);
         $stmt = $pdo->prepare(
-            "SELECT * FROM vw_stock_colecciones $where ORDER BY id_coleccion LIMIT :limite OFFSET :offset"
+            "SELECT vw.*, (SELECT COUNT(*) FROM items i WHERE i.id_coleccion = vw.id_coleccion) AS total_items
+             FROM vw_stock_colecciones vw
+             $where
+             ORDER BY vw.id_coleccion LIMIT :limite OFFSET :offset"
         );
         foreach ($parametros as $clave => $valor) {
             $stmt->bindValue($clave, $valor);
@@ -122,9 +125,31 @@ class Coleccion
         ]);
     }
 
+    /** true si la colección tiene ítems asociados (actuales o históricos, con o sin salida). */
+    public static function tieneItems(int $id): bool
+    {
+        $stmt = Database::conexion()->prepare('SELECT COUNT(*) AS n FROM items WHERE id_coleccion = :id');
+        $stmt->execute(['id' => $id]);
+
+        return ((int) $stmt->fetch()['n']) > 0;
+    }
+
+    /**
+     * Solo debe llamarse sobre colecciones sin ítems (ver tieneItems()). El historial
+     * huérfano que quede de ítems ya eliminados (regla 3.1) se limpia junto con la colección.
+     */
     public static function eliminar(int $id): void
     {
-        Database::conexion()->prepare('DELETE FROM colecciones WHERE id_coleccion = :id')->execute(['id' => $id]);
+        $pdo = Database::conexion();
+        $pdo->beginTransaction();
+        try {
+            $pdo->prepare('DELETE FROM historial WHERE id_coleccion = :id')->execute(['id' => $id]);
+            $pdo->prepare('DELETE FROM colecciones WHERE id_coleccion = :id')->execute(['id' => $id]);
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
     }
 
     public static function conStockBajo(?array $almacenesPermitidos): array
@@ -151,33 +176,6 @@ class Coleccion
                 $where
                 GROUP BY item, tipo, medidas
                 ORDER BY descripcion";
-
-        $stmt = Database::conexion()->prepare($sql);
-        $stmt->execute($parametros);
-
-        return $stmt->fetchAll();
-    }
-
-    /**
-     * @param array{item: string, tipo: string, medidas: string}|null $conjunto Filtra por el
-     *   conjunto artículo/tipo/medida (independiente del almacén), para comparar entre
-     *   almacenes el stock de un mismo tipo de artículo.
-     */
-    public static function stockTotalPorAlmacen(?array $almacenesPermitidos, ?array $conjunto = null): array
-    {
-        [$where, $parametros] = self::construirWhere([], $almacenesPermitidos);
-
-        if ($conjunto !== null) {
-            $where .= ($where ? ' AND ' : ' WHERE ') . 'item = :conj_item AND tipo = :conj_tipo AND medidas = :conj_medidas';
-            $parametros[':conj_item'] = $conjunto['item'];
-            $parametros[':conj_tipo'] = $conjunto['tipo'];
-            $parametros[':conj_medidas'] = $conjunto['medidas'];
-        }
-
-        $sql = "SELECT id_almacen, nombre_almacen, SUM(stock) AS stock_total
-                FROM vw_stock_colecciones $where
-                GROUP BY id_almacen, nombre_almacen
-                ORDER BY nombre_almacen";
 
         $stmt = Database::conexion()->prepare($sql);
         $stmt->execute($parametros);

@@ -5,6 +5,7 @@ use App\Core\Permisos;
 
 $navPrincipal = [
     ['ruta' => 'dashboard', 'vista' => 'dashboard', 'etiqueta' => 'Dashboard', 'icono' => 'grid'],
+    ['ruta' => 'notificaciones', 'vista' => 'notificaciones', 'etiqueta' => 'Notificaciones', 'icono' => 'campana'],
     ['ruta' => 'entradas', 'vista' => 'entradas', 'etiqueta' => 'Entradas', 'icono' => 'entrada'],
     ['ruta' => 'salidas', 'vista' => 'salidas', 'etiqueta' => 'Salidas', 'icono' => 'salida'],
     ['ruta' => 'inventario', 'vista' => 'inventario', 'etiqueta' => 'Inventario', 'icono' => 'caja'],
@@ -19,6 +20,7 @@ $navAdmin = [
 ];
 
 $iconos = [
+    'campana' => '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
     'grid' => '<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>',
     'entrada' => '<path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>',
     'salida' => '<path d="M12 21V9m0 0 4 4m-4-4-4 4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>',
@@ -32,26 +34,36 @@ $iconos = [
 
 $esAdmin = Permisos::esAdmin($usuario);
 ?>
-<aside id="sidebar" class="w-60 shrink-0 border-r border-borde bg-superficie hidden md:flex md:flex-col overflow-y-auto">
-    <nav class="p-3 space-y-1">
+<aside id="sidebar" class="w-64 shrink-0 border-r border-borde bg-superficie hidden md:flex flex-col overflow-y-auto fixed md:sticky top-16 bottom-0 left-0 md:h-[calc(100vh-4rem)] z-20 shadow-flotante md:shadow-none">
+    <nav class="p-4 space-y-1 flex-1">
+        <p class="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-texto-secundario">Operación</p>
         <?php foreach ($navPrincipal as $item): ?>
             <?php if (!Permisos::puedeVerVista($usuario, $item['vista'])) continue; ?>
             <a href="/<?= $item['ruta'] ?>" data-link data-ruta="<?= $item['ruta'] ?>"
-               class="nav-link flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-texto hover:bg-fondo transition-colors">
+               class="nav-link group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-texto-secundario hover:bg-fondo hover:text-texto">
                 <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><?= $iconos[$item['icono']] ?></svg>
                 <span><?= htmlspecialchars($item['etiqueta']) ?></span>
+                <?php if ($item['ruta'] === 'notificaciones'): ?>
+                    <span data-contador-notificaciones class="hidden ml-auto min-w-5 h-5 px-1.5 rounded-full bg-red-600 text-white text-xs font-semibold flex items-center justify-center"></span>
+                <?php endif; ?>
             </a>
         <?php endforeach; ?>
 
         <?php if ($esAdmin): ?>
-            <p class="px-3 pt-4 pb-1 text-xs font-medium uppercase tracking-wide text-texto-secundario">Administración</p>
+            <p class="px-3 pt-6 pb-2 text-[11px] font-semibold uppercase tracking-wider text-texto-secundario">Administración</p>
             <?php foreach ($navAdmin as $item): ?>
                 <a href="/<?= $item['ruta'] ?>" data-link data-ruta="<?= $item['ruta'] ?>"
-                   class="nav-link flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-texto hover:bg-fondo transition-colors">
+                   class="nav-link group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-texto-secundario hover:bg-fondo hover:text-texto">
                     <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><?= $iconos[$item['icono']] ?></svg>
                     <span><?= htmlspecialchars($item['etiqueta']) ?></span>
                 </a>
             <?php endforeach; ?>
         <?php endif; ?>
     </nav>
+    <div class="p-4 border-t border-borde">
+        <div class="rounded-xl bg-fondo px-3 py-3 text-xs text-texto-secundario">
+            <p class="font-semibold text-texto">Tirex<span class="text-acento-texto">Stock</span></p>
+            <p class="mt-0.5">Inventario de llantas por colecciones</p>
+        </div>
+    </div>
 </aside>

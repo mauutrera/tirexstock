@@ -15,6 +15,20 @@ const CLAVES_ACCION = [
     ['accion_desmarcar_salida', 'Desmarcar salidas'],
 ];
 
+/** Jerarquía de roles (4.1): debe reflejar exactamente Permisos::puedeGestionarRol() en el backend. */
+const NIVEL_ROL = { super_admin: 4, admin_general: 3, admin_almacen: 2, usuario_normal: 1 };
+const ETIQUETAS_ROL = {
+    super_admin: 'Super Admin',
+    admin_general: 'Administrador General',
+    admin_almacen: 'Administrador por Almacén',
+    usuario_normal: 'Usuario Normal',
+};
+
+function puedeGestionarRol(rolActor, rolObjetivo) {
+    if (rolActor === 'super_admin') return true;
+    return (NIVEL_ROL[rolActor] || 0) > (NIVEL_ROL[rolObjetivo] || 0);
+}
+
 /** Administración de Usuarios (5.11), incluye configuración de permisos (4.2). */
 export default class UsuariosAdminView {
     constructor({ api, usuario, toast, contenedor }) {
@@ -23,6 +37,7 @@ export default class UsuariosAdminView {
         this.toast = toast;
         this.contenedor = contenedor;
         this.esSuperAdmin = usuario.rol === 'super_admin';
+        this.rolesGestionables = Object.keys(NIVEL_ROL).filter((rol) => puedeGestionarRol(usuario.rol, rol));
     }
 
     async render() {
@@ -40,15 +55,19 @@ export default class UsuariosAdminView {
         this.tabla = new DataTable({
             contenedor: this.contenedor.querySelector('[data-tabla]'),
             columnas: [
-                { clave: 'id_usuario', etiqueta: 'ID Usuario' },
                 { clave: 'nombre', etiqueta: 'Nombre', filtro: { tipo: 'texto' } },
                 { clave: 'departamento', etiqueta: 'Departamento' },
                 { clave: 'rol', etiqueta: 'Rol' },
                 { clave: 'almacenes', etiqueta: 'Almacén(es) Asignado(s)', formato: (v) => escaparHtml((v || []).map((a) => a.nombre).join(', ')) },
             ],
             acciones: [
-                { etiqueta: 'Editar', onClick: (fila) => this._abrirFormulario(fila) },
-                { etiqueta: 'Eliminar', claseCss: 'text-red-600 hover:bg-red-50', onClick: (fila) => this._eliminar(fila) },
+                { etiqueta: 'Editar', visible: (fila) => fila.puede_gestionar, onClick: (fila) => this._abrirFormulario(fila) },
+                {
+                    etiqueta: 'Eliminar',
+                    claseCss: 'text-red-600 hover:bg-red-50',
+                    visible: (fila) => fila.puede_gestionar,
+                    onClick: (fila) => this._eliminar(fila),
+                },
             ],
             cargarPagina: (pagina, filtros) => this.api.get(this._url(pagina, filtros)),
             exportar: (filtros) => this.api.descargar(this._url(1, filtros, true), 'usuarios.csv'),
@@ -63,9 +82,7 @@ export default class UsuariosAdminView {
     }
 
     _abrirFormulario(usuario = null) {
-        const rolesDisponibles = this.esSuperAdmin
-            ? [['super_admin', 'Super Admin'], ['admin_general', 'Administrador General'], ['admin_almacen', 'Administrador por Almacén'], ['usuario_normal', 'Usuario Normal']]
-            : [['usuario_normal', 'Usuario Normal']];
+        const rolesDisponibles = this.rolesGestionables.map((rol) => [rol, ETIQUETAS_ROL[rol]]);
 
         const idsAsignados = new Set((usuario?.almacenes || []).map((a) => a.id_almacen));
 

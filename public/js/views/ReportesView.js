@@ -46,9 +46,7 @@ export default class ReportesView {
 
         if (this.tipo === 'movimientos_periodo') {
             panel.innerHTML = `
-                <h2 class="text-sm font-semibold mb-2">Entradas del período</h2>
                 <div data-tabla-entradas class="mb-6"></div>
-                <h2 class="text-sm font-semibold mb-2">Salidas del período</h2>
                 <div data-tabla-salidas></div>
             `;
             this._tablaEntradasPeriodo(panel.querySelector('[data-tabla-entradas]'));
@@ -93,6 +91,7 @@ export default class ReportesView {
     _tablaEntradasPeriodo(contenedor) {
         new DataTable({
             contenedor,
+            titulo: 'Entradas del período',
             columnas: [
                 { clave: 'fecha_ingreso', etiqueta: 'Fecha', formato: (v) => escaparHtml(formatearFecha(v)), filtro: { tipo: 'rango_fecha', clave: 'fecha' } },
                 { clave: 'numero_serie', etiqueta: 'Número de Serie' },
@@ -107,6 +106,7 @@ export default class ReportesView {
     _tablaSalidasPeriodo(contenedor) {
         new DataTable({
             contenedor,
+            titulo: 'Salidas del período',
             columnas: [
                 { clave: 'fecha_salida', etiqueta: 'Fecha', formato: (v) => escaparHtml(formatearFecha(v)) },
                 { clave: 'numero_serie', etiqueta: 'Número de Serie' },

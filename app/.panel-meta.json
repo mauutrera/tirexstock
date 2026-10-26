@@ -1,10 +1,10 @@
 {
-    "public_subdir": "",
+    "public_subdir": "public",
     "github": {
         "repo_full_name": "mauutrera\/inventariocol",
         "remote_url": "https:\/\/github.com\/mauutrera\/inventariocol.git",
         "html_url": "https:\/\/github.com\/mauutrera\/inventariocol",
         "branch": "main",
-        "last_publish_at": null
+        "last_publish_at": "2026-08-10T06:27:15+00:00"
     }
 }

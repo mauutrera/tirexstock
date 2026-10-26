@@ -4,10 +4,11 @@
  * clase correspondiente dentro de #app.
  */
 export default class RouterCliente {
-    constructor({ rutas, contexto, contenedor }) {
+    constructor({ rutas, contexto, contenedor, alNavegar = null }) {
         this.rutas = rutas;
         this.contexto = contexto;
         this.contenedor = contenedor;
+        this.alNavegar = alNavegar;
         this.vistaActual = null;
     }
 
@@ -36,6 +37,7 @@ export default class RouterCliente {
         const ruta = window.location.pathname;
         const coincidencia = this._emparejar(ruta);
         this._marcarNavActivo(ruta);
+        this.alNavegar?.();
 
         this.vistaActual?.destruir?.();
         this.contenedor.innerHTML = '';
@@ -77,9 +79,10 @@ export default class RouterCliente {
         const primerSegmento = '/' + (ruta.replace(/^\/+|\/+$/g, '').split('/')[0] || '');
         document.querySelectorAll('.nav-link').forEach((enlace) => {
             const activo = enlace.getAttribute('href') === primerSegmento;
-            enlace.classList.toggle('bg-fondo', activo);
+            enlace.classList.toggle('bg-acento-suave', activo);
             enlace.classList.toggle('text-acento-texto', activo);
             enlace.classList.toggle('font-semibold', activo);
+            enlace.classList.toggle('text-texto-secundario', !activo);
         });
         document.getElementById('sidebar')?.classList.add('hidden');
     }

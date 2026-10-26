@@ -14,9 +14,9 @@ export default class Modal {
 
     abrir() {
         const overlay = document.createElement('div');
-        overlay.className = 'fixed inset-0 z-40 flex items-center justify-center bg-black/50 p-4';
+        overlay.className = 'fixed inset-0 z-40 flex items-center justify-center bg-slate-950/50 backdrop-blur-sm p-4';
         overlay.innerHTML = `
-            <div class="w-full ${this.ancho} rounded-xl bg-superficie shadow-2xl">
+            <div class="w-full ${this.ancho} rounded-2xl border border-borde bg-superficie shadow-flotante">
                 <div class="flex items-center justify-between border-b border-borde px-5 py-4">
                     <h2 class="text-base font-semibold">${this.titulo}</h2>
                     <button type="button" data-cerrar-modal class="rounded-lg p-1 text-texto-secundario hover:bg-fondo" aria-label="Cerrar">

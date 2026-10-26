@@ -13,6 +13,12 @@ export default class SalidasView {
     }
 
     async render() {
+        try {
+            this.almacenes = (await this.api.get('/api/almacenes')).datos || [];
+        } catch {
+            this.almacenes = [];
+        }
+
         this.contenedor.innerHTML = `
             <div class="flex items-center justify-between mb-4 gap-3 flex-wrap">
                 <h1 class="text-2xl font-semibold">Salidas</h1>
@@ -40,9 +46,14 @@ export default class SalidasView {
                 { clave: 'fecha_salida', etiqueta: 'Fecha', formato: (v) => escaparHtml(formatearFecha(v)), filtro: { tipo: 'rango_fecha', clave: 'fecha' } },
                 { clave: 'usuario_retira_nombre', etiqueta: 'Usuario que Retira' },
                 { clave: 'coleccion_descripcion', etiqueta: 'Colección' },
-                { clave: 'almacen_nombre', etiqueta: 'Almacén' },
+                {
+                    clave: 'almacen_nombre', etiqueta: 'Almacén',
+                    filtro: { tipo: 'seleccion', clave: 'id_almacen', opciones: this.almacenes.map((a) => ({ valor: a.id_almacen, etiqueta: a.nombre })) },
+                },
                 { clave: 'numero_serie', etiqueta: 'Número de Serie', filtro: { tipo: 'texto' } },
                 { clave: 'responsable_recibe', etiqueta: 'Responsable que Recibe' },
+                { clave: 'unidad_percibida', etiqueta: 'Unidad Asignada', filtro: { tipo: 'texto', clave: 'unidad_percibida' } },
+                { clave: 'posicion', etiqueta: 'Posición' },
                 { clave: 'notas_salida', etiqueta: 'Notas de Salida', filtro: { tipo: 'texto', clave: 'notas_salida' } },
             ],
             acciones,

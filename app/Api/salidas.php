@@ -30,6 +30,7 @@ if ($metodo === 'GET') {
         'id_coleccion' => $_GET['id_coleccion'] ?? null,
         'id_almacen' => $_GET['id_almacen'] ?? null,
         'usuario_retira' => $_GET['usuario_retira'] ?? null,
+        'unidad_percibida' => $_GET['unidad_percibida'] ?? null,
         'fecha_salida' => $_GET['fecha'] ?? null,
         'fecha_salida_desde' => $_GET['fecha_desde'] ?? null,
         'fecha_salida_hasta' => $_GET['fecha_hasta'] ?? null,

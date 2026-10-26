@@ -13,6 +13,12 @@ export default class EntradasView {
     }
 
     async render() {
+        try {
+            this.almacenes = (await this.api.get('/api/almacenes')).datos || [];
+        } catch {
+            this.almacenes = [];
+        }
+
         this.contenedor.innerHTML = `
             <div class="flex items-center justify-between mb-4 gap-3 flex-wrap">
                 <h1 class="text-2xl font-semibold">Entradas</h1>
@@ -40,7 +46,10 @@ export default class EntradasView {
                 { clave: 'fecha_ingreso', etiqueta: 'Fecha', formato: (v) => escaparHtml(formatearFecha(v)), filtro: { tipo: 'rango_fecha', clave: 'fecha' } },
                 { clave: 'usuario_registra_nombre', etiqueta: 'Usuario que Registra' },
                 { clave: 'coleccion_descripcion', etiqueta: 'Colección' },
-                { clave: 'almacen_nombre', etiqueta: 'Almacén' },
+                {
+                    clave: 'almacen_nombre', etiqueta: 'Almacén',
+                    filtro: { tipo: 'seleccion', clave: 'id_almacen', opciones: this.almacenes.map((a) => ({ valor: a.id_almacen, etiqueta: a.nombre })) },
+                },
                 { clave: 'numero_serie', etiqueta: 'Número de Serie', filtro: { tipo: 'texto' } },
                 { clave: 'notas_entrada', etiqueta: 'Notas de Entrada', filtro: { tipo: 'texto' } },
             ],

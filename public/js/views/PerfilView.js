@@ -41,7 +41,7 @@ export default class PerfilView {
             <h1 class="text-2xl font-semibold mb-4">Mi Perfil</h1>
 
             <div class="max-w-2xl space-y-6">
-                <div class="rounded-xl border border-borde bg-superficie p-5 flex items-center gap-4">
+                <div class="tarjeta p-5 flex items-center gap-4">
                     <div class="w-14 h-14 shrink-0 rounded-full bg-acento text-white flex items-center justify-center text-lg font-semibold">
                         ${escaparHtml(iniciales(u.nombre) || '?')}
                     </div>
@@ -54,7 +54,7 @@ export default class PerfilView {
                     </div>
                 </div>
 
-                <div class="rounded-xl border border-borde bg-superficie p-5">
+                <div class="tarjeta p-5">
                     <div class="flex items-center gap-2 mb-4">
                         <svg class="w-5 h-5 text-texto-secundario" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
                         <h2 class="text-sm font-semibold">Datos de Usuario</h2>
@@ -90,7 +90,7 @@ export default class PerfilView {
                     </form>
                 </div>
 
-                <div class="rounded-xl border border-borde bg-superficie p-5">
+                <div class="tarjeta p-5">
                     <div class="flex items-center gap-2 mb-4">
                         <svg class="w-5 h-5 text-texto-secundario" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
                         <h2 class="text-sm font-semibold">Seguridad</h2>

@@ -1,6 +1,6 @@
 {
-    "name": "Sistema de Inventario por Colecciones",
-    "short_name": "InventarioCol",
+    "name": "TirexStock",
+    "short_name": "TirexStock",
     "description": "Inventario por colecciones con trazabilidad de ítems por número de serie.",
     "start_url": "/",
     "scope": "/",
@@ -10,7 +10,7 @@
     "lang": "es",
     "icons": [
         {
-            "src": "/public/icons/icon.svg",
+            "src": "/img/icon.svg",
             "sizes": "any",
             "type": "image/svg+xml",
             "purpose": "any maskable"

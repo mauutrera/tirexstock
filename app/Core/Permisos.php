@@ -11,8 +11,20 @@ class Permisos
 {
     private const ROLES_ADMIN = ['super_admin', 'admin_general', 'admin_almacen'];
 
+    /**
+     * Jerarquía de roles (4.1): cada rol solo puede crear/editar/eliminar
+     * usuarios de un nivel estrictamente inferior. super_admin es la única
+     * excepción: administra a cualquiera, incluidos otros super_admin.
+     */
+    private const NIVEL_ROL = [
+        'super_admin' => 4,
+        'admin_general' => 3,
+        'admin_almacen' => 2,
+        'usuario_normal' => 1,
+    ];
+
     /** Vistas de acceso exclusivo para administradores (no configurables). */
-    private const VISTAS_SOLO_ADMIN = ['dashboard', 'reportes', 'colecciones', 'almacenes', 'usuarios'];
+    private const VISTAS_SOLO_ADMIN = ['dashboard', 'notificaciones', 'reportes', 'colecciones', 'almacenes', 'usuarios'];
 
     /** Vistas operativas configurables por usuario normal, con su valor por defecto. */
     private const VISTAS_CONFIGURABLES = [
@@ -124,5 +136,18 @@ class Permisos
     public static function puedeAdministrarUsuarios(array $usuario): bool
     {
         return self::esAdmin($usuario);
+    }
+
+    /** true si $usuario puede crear/editar/eliminar a alguien con rol $rolObjetivo (jerarquía 4.1). */
+    public static function puedeGestionarRol(array $usuario, string $rolObjetivo): bool
+    {
+        if ($usuario['rol'] === 'super_admin') {
+            return true;
+        }
+
+        $nivelActor = self::NIVEL_ROL[$usuario['rol']] ?? 0;
+        $nivelObjetivo = self::NIVEL_ROL[$rolObjetivo] ?? 0;
+
+        return $nivelActor > $nivelObjetivo;
     }
 }

@@ -16,11 +16,11 @@ $metodo = $_SERVER['REQUEST_METHOD'];
 $esGerenciaGlobal = in_array($usuario['rol'], ['super_admin', 'admin_general'], true);
 $almacenesPermitidos = Permisos::almacenesPermitidos($usuario);
 
-/** Solo super_admin puede crear/editar otros administradores (jerarquía 4.1). */
+/** Cada rol solo administra usuarios de un nivel estrictamente inferior (jerarquía 4.1). */
 function validarRolDestino(array $usuarioActual, string $rolDestino): void
 {
-    if ($rolDestino !== 'usuario_normal' && $usuarioActual['rol'] !== 'super_admin') {
-        Respuesta::error('Solo un Super Admin puede crear o editar administradores.', 403);
+    if (!Permisos::puedeGestionarRol($usuarioActual, $rolDestino)) {
+        Respuesta::error('No tiene jerarquía suficiente para crear o editar ese usuario.', 403);
     }
 }
 
@@ -37,6 +37,7 @@ if ($metodo === 'GET') {
     $usuarios = Usuario::listar($almacenesPermitidos);
     foreach ($usuarios as &$fila) {
         $fila['almacenes'] = Usuario::almacenesAsignados((int) $fila['id_usuario']);
+        $fila['puede_gestionar'] = Permisos::puedeGestionarRol($usuario, $fila['rol']);
     }
     unset($fila);
 

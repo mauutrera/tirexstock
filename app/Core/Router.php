@@ -9,6 +9,7 @@ use App\Controllers\DashboardController;
 use App\Controllers\EntradasController;
 use App\Controllers\HistorialController;
 use App\Controllers\InventarioController;
+use App\Controllers\NotificacionesController;
 use App\Controllers\PerfilController;
 use App\Controllers\ReportesController;
 use App\Controllers\SalidasController;
@@ -25,6 +26,7 @@ class Router
     /** @var array<string, class-string> primer segmento de ruta => Controller */
     private const MAPA_VISTAS = [
         'dashboard' => DashboardController::class,
+        'notificaciones' => NotificacionesController::class,
         'entradas' => EntradasController::class,
         'salidas' => SalidasController::class,
         'inventario' => InventarioController::class,

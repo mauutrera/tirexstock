@@ -9,9 +9,13 @@ export default class LoginView {
 
     render() {
         this.contenedor.innerHTML = `
-            <div class="w-full max-w-sm rounded-xl border border-borde bg-superficie p-6 shadow-sm">
-                <h1 class="text-xl font-semibold text-center">Sistema de Inventario</h1>
-                <p class="text-sm text-texto-secundario text-center mt-1 mb-6">Inicia sesión para continuar</p>
+            <div class="w-full max-w-sm tarjeta p-8 shadow-flotante">
+                <div class="mx-auto mb-4 w-14 h-14 rounded-2xl bg-acento-suave flex items-center justify-center">
+                    <img src="/img/icon.svg" alt="" class="w-9 h-9">
+                </div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-center">Tirex<span class="text-acento-texto">Stock</span></h1>
+                <p class="text-xs uppercase tracking-wide text-texto-secundario text-center mt-1">Inventario de llantas por colecciones</p>
+                <p class="text-sm text-texto-secundario text-center mt-4 mb-6">Inicia sesión para continuar</p>
                 <form data-form-login class="space-y-4">
                     <label class="block text-sm">
                         Email
@@ -24,7 +28,7 @@ export default class LoginView {
                                class="mt-1 w-full rounded-lg border border-borde bg-fondo px-3 py-2 text-sm text-texto">
                     </label>
                     <p data-error class="text-sm text-red-600 hidden"></p>
-                    <button type="submit" class="w-full rounded-lg bg-acento px-3 py-2 text-sm font-medium text-white hover:opacity-90">
+                    <button type="submit" class="w-full rounded-xl bg-acento px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90">
                         Ingresar
                     </button>
                 </form>

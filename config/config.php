@@ -5,7 +5,7 @@
 
 define('APP_ROOT', dirname(__DIR__));
 define('APP_ENV', getenv('APP_ENV') ?: 'development');
-define('APP_NAME', 'Sistema de Inventario por Colecciones');
+define('APP_NAME', 'TirexStock');
 
 // Duración de sesión por inactividad (minutos).
 define('SESSION_LIFETIME_MINUTES', 120);

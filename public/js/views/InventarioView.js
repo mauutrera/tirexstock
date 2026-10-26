@@ -26,7 +26,6 @@ export default class InventarioView {
         this.tabla = new DataTable({
             contenedor: this.contenedor.querySelector('[data-tabla]'),
             columnas: [
-                { clave: 'id_coleccion', etiqueta: 'ID Colección' },
                 { clave: 'descripcion', etiqueta: 'Descripción', filtro: { tipo: 'texto' } },
                 { clave: 'item', etiqueta: 'Ítem', filtro: { tipo: 'texto' } },
                 { clave: 'tipo', etiqueta: 'Tipo', filtro: { tipo: 'texto' } },

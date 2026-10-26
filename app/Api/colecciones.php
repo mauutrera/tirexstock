@@ -86,6 +86,9 @@ if ($metodo === 'DELETE') {
     if (!$coleccion || !Permisos::tieneAccesoAlmacen($usuario, (int) $coleccion['id_almacen'])) {
         Respuesta::error('Colección no encontrada.', 404);
     }
+    if (Coleccion::tieneItems($id)) {
+        Respuesta::error('No se puede eliminar: la colección tiene ítems asociados (actuales o históricos). Solo puede editarla.', 422);
+    }
 
     Coleccion::eliminar($id);
     Respuesta::json(['ok' => true]);

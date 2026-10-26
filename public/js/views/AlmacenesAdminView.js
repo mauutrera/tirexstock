@@ -30,7 +30,6 @@ export default class AlmacenesAdminView {
         this.tabla = new DataTable({
             contenedor: this.contenedor.querySelector('[data-tabla]'),
             columnas: [
-                { clave: 'id_almacen', etiqueta: 'ID Almacén' },
                 { clave: 'nombre', etiqueta: 'Nombre', filtro: { tipo: 'texto' } },
                 { clave: 'ubicacion', etiqueta: 'Ubicación', filtro: { tipo: 'texto' } },
             ],
